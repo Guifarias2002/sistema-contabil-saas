@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sistema Contábil</title>
+</head>
+
+<body>
+
+<h1>Sistema Contábil</h1>
+
+<h2>Cadastrar Empresa</h2>
+
+<input id="nomeEmpresa" placeholder="Nome da empresa">
+<input id="cnpjEmpresa" placeholder="CNPJ">
+<button onclick="cadastrarEmpresa()">Cadastrar</button>
+
+<h2>Empresas cadastradas</h2>
+
+<ul id="listaEmpresas"></ul>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabaseUrl = 'https://cunwgepjcjxechwtbhur.supabase.co'
+const supabaseKey = 'sb_publishable_EOU5W_dyJkVrg8oy5UT55g_6uiQSnpi'
+
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+async function cadastrarEmpresa(){
+
+const nome = document.getElementById("nomeEmpresa").value
+const cnpj = document.getElementById("cnpjEmpresa").value
+
+await supabase.from("empresas").insert([
+{
+nome: nome,
+cnpj: cnpj,
+regime_tributario: "MEI"
+}
+])
+
+carregarEmpresas()
+
+}
+
+async function carregarEmpresas(){
+
+const { data } = await supabase
+.from("empresas")
+.select("*")
+
+const lista = document.getElementById("listaEmpresas")
+
+lista.innerHTML = ""
+
+data.forEach(emp => {
+
+const li = document.createElement("li")
+li.textContent = emp.nome + " - " + emp.cnpj
+
+lista.appendChild(li)
+
+})
+
+}
+
+carregarEmpresas()
+
+</script>
+
+</body>
+
+</html>
